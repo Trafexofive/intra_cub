@@ -34,13 +34,12 @@ void fill_image(t_info *info, int color) {
     point.y += 1;
   }
 }
+
 void draw_wall_strip(t_info *info, int x, double dist, double angle) {
   t_img *image = &info->img;
   t_point point;
   int color;
-
   double corrected_dist = dist * cos(angle - info->player->angle);
-
   double wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
   int draw_start = (SCREEN_HEIGHT - wall_height) / 2;
   if (draw_start < 0)
@@ -48,30 +47,86 @@ void draw_wall_strip(t_info *info, int x, double dist, double angle) {
   int draw_end = (SCREEN_HEIGHT + wall_height) / 2;
   if (draw_end >= SCREEN_HEIGHT)
     draw_end = SCREEN_HEIGHT - 1;
-    info->wall_h = wall_height;
+  info->wall_h = wall_height;
 
+  // Calculate texture x coordinate
+  double wall_x = info->player->x + corrected_dist * cos(angle);
+  wall_x -= floor(wall_x);
+  int tex_x = (int)(wall_x * TEXTURE_WIDTH);
 
-  if (info->wall_side == 'N') {
-    color = 0xFF0000;
-  } else if (info->wall_side == 'S') {
-    color = 0x00FF00;
-  } else if (info->wall_side == 'E') {
-    color = 0x0000FF;
-  } else if (info->wall_side == 'W') {
-    color = 0xFFFF00;
-  } else {
-    color = 0xFFFFFF;
-  }
   point.x = x;
-  int y = draw_start;
-  while (y <= draw_end) {
+  double step = 1.0 * TEXTURE_HEIGHT / wall_height;
+  double tex_pos = (draw_start - SCREEN_HEIGHT / 2 + wall_height / 2) * step;
+
+  for (int y = draw_start; y <= draw_end; y++) {
+    int tex_y = (int)tex_pos & (TEXTURE_HEIGHT - 1);
+    tex_pos += step;
     point.y = y;
-    //color = get_tex_pixel_color(&point, info);
+    color = get_tex_pixel_color(info, tex_x, tex_y);
     put_pixel(image, point, color);
-    y++;
   }
 }
 
+int get_tex_pixel_color(t_info *info, int tex_x, int tex_y) {
+  t_img *texture;
+  
+  // Select the appropriate texture based on wall side
+  if (info->wall_side == 'N')
+    texture = &info->north_texture;
+  else if (info->wall_side == 'S')
+    texture = &info->south_texture;
+  else if (info->wall_side == 'E')
+    texture = &info->east_texture;
+  else if (info->wall_side == 'W')
+    texture = &info->west_texture;
+  else
+    return 0xFFFFFF; // Default white color if no texture is found
+
+  // Calculate the position in the texture's data
+  char *dst = texture->addr + (tex_y * texture->line_length + tex_x * (texture->bits_per_pixel / 8));
+  
+  // Return the color as an integer
+  return *(unsigned int*)dst;
+}
+
+// void draw_wall_strip(t_info *info, int x, double dist, double angle) {
+//   t_img *image = &info->img;
+//   t_point point;
+//   int color;
+//
+//   double corrected_dist = dist * cos(angle - info->player->angle);
+//
+//   double wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
+//   int draw_start = (SCREEN_HEIGHT - wall_height) / 2;
+//   if (draw_start < 0)
+//     draw_start = 0;
+//   int draw_end = (SCREEN_HEIGHT + wall_height) / 2;
+//   if (draw_end >= SCREEN_HEIGHT)
+//     draw_end = SCREEN_HEIGHT - 1;
+//     info->wall_h = wall_height;
+//
+//
+//   if (info->wall_side == 'N') {
+//     color = 0xFF0000;
+//   } else if (info->wall_side == 'S') {
+//     color = 0x00FF00;
+//   } else if (info->wall_side == 'E') {
+//     color = 0x0000FF;
+//   } else if (info->wall_side == 'W') {
+//     color = 0xFFFF00;
+//   } else {
+//     color = 0xFFFFFF;
+//   }
+//   point.x = x;
+//   int y = draw_start;
+//   while (y <= draw_end) {
+//     point.y = y;
+//     //color = get_tex_pixel_color(&point, info);
+//     put_pixel(image, point, color);
+//     y++;
+//   }
+// }
+//
 void put_floor_color(t_info *info, int color) {
   t_img *image = &info->img;
   t_point point;
