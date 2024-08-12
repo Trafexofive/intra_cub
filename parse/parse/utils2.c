@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 22:40:51 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/04 13:39:35 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:49 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 char	*ft_strchr(char *s, char c)
 {
@@ -51,6 +51,8 @@ int	ft_atoi(char *str)
 		return (INT_MAX);
 	while (str[i] && str[i] >= '0' && str[i] <= '9')
 		res = (str[i++] - '0') + (res * 10);
+	if (str[i] != '\0')
+		write_fd("Error\nnon valid char in colors\n", 2);
 	res *= sign;
 	return ((int)res);
 }

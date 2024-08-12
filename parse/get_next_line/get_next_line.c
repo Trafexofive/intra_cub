@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 17:44:26 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/04 14:00:58 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:14 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../../inc/get_next_line.h"
 
 char	*ft_free(char *buffer, char *buf)
 {

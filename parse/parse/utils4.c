@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 04:30:36 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/03 17:35:37 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:42:00 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 char	*ft_substr(char *s, int start, int len)
 {

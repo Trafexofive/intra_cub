@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 10:36:42 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/03 17:39:36 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:42:09 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 void	check_chars(char a, char b, char c, char d)
 {

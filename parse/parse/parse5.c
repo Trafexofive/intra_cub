@@ -6,17 +6,17 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 03:47:01 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/06 04:59:53 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:42:13 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 t_texture	*open_tex(char *path, void *mlx_ptr)
 {
 	t_texture	*tex;
 
-	tex= gb_malloc(sizeof(t_texture), 0);
+	tex = gb_malloc(sizeof(t_texture), 0);
 	tex->tex = mlx_xpm_file_to_image(mlx_ptr, path, &tex->w, &tex->h);
 	if (!tex->tex)
 		write_fd("Error\nerror openning texture\n", 2);
@@ -59,4 +59,15 @@ void	assign_player_pos(t_data **all_data_ptr)
 		}
 		i++;
 	}
+}
+
+void	check_ext(t_map **all_map_adr)
+{
+	t_map	*map_data;
+
+	map_data = *all_map_adr;
+	check_extention(map_data->no_tex, ".xpm");
+	check_extention(map_data->so_tex, ".xpm");
+	check_extention(map_data->ea_tex, ".xpm");
+	check_extention(map_data->we_tex, ".xpm");
 }

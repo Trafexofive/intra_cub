@@ -6,22 +6,20 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:01:10 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/09 19:39:18 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:39:53 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB_H
 # define CUB_H
 
-# include "../get_next_line/get_next_line.h"
-# include "../garbage_collector/garbage.h"
+# include "get_next_line.h"
+# include "garbage.h"
 
 # include <stdbool.h>
 # include <limits.h>
 # include <fcntl.h>
-# include <stdio.h>
 # include <mlx.h>
-
 
 typedef struct s_node
 {
@@ -110,7 +108,8 @@ t_data		*transform(t_map **all_map_adr, t_mlx **ini_adr);
 char		*ft_strdup(char *s1);
 int			count_words(char *s, char *delimiters);
 int			word_size(char *s, char *delimiters, int i);
-int			fill_string(char *s, char *delimiters, char **res, int number_words);
+int			fill_string(char *s, char *delimiters, char **res,
+				int number_words);
 char		**ft_split(char *s, char *delimiters);
 char		*ft_substr(char *s, int start, int len);
 int			ft_atoi(char *str);
@@ -131,5 +130,6 @@ int			check(char *val);
 t_texture	*open_tex(char *path, void *mlx_ptr);
 void		open_textures(t_data **all_data_adr);
 void		assign_player_pos(t_data **all_data_ptr);
+void		check_ext(t_map **all_map_adr);
 
 #endif

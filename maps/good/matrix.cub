@@ -1,10 +1,13 @@
-NO parse/textures/north.xpm
-SO parse/textures/south.xpm
-WE parse/textures/west.xpm
-EA parse/textures/east.xpm
+NO ./maps/textures/north.xpm
 
-F 164,169,20
-C 153,204,255
+SO ./maps/textures/south.xpm
+
+WE ./maps/textures/west.xpm
+
+EA ./maps/textures/east.xpm
+
+F 0,0,0
+C 0,0,0
 
 111111111111111111111
 101000001000000000001

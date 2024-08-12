@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:01:14 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/01 22:45:55 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:40:45 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 int	ft_strlen(char *buffer)
 {
@@ -24,9 +24,9 @@ int	ft_strlen(char *buffer)
 
 char	*trim_behind(char *buffer)
 {
-	int		last_index;
-	char	*res;
-	int		i;
+	int			last_index;
+	char		*res;
+	int			i;
 
 	last_index = ft_strlen(buffer) - 1;
 	if (buffer[last_index] == '\n')
@@ -36,7 +36,7 @@ char	*trim_behind(char *buffer)
 	{
 		last_index--;
 	}
-	res = (char *)gb_malloc(last_index + 1, 0);
+	res = (char *)gb_malloc(last_index + 2, 0);
 	i = 0;
 	while (i <= last_index)
 	{

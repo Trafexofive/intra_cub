@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 03:29:36 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/06 03:52:05 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:42:05 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 void	get_color(char *buffer, char *delim, int *fill)
 {
@@ -107,8 +107,9 @@ t_data	*transform(t_map **all_map_adr, t_mlx **ini_adr)
 	i = 0;
 	while (map)
 	{
-		tr_map->map[i++] = map->content;
+		tr_map->map[i] = map->content;
 		map = map->next;
+		i++;
 	}
 	tr_map->map[i] = NULL;
 	extract_color(&tr_map, &all_map);

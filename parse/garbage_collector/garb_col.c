@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 00:44:19 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/03 17:41:25 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:04 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "garbage.h"
+#include "../../inc/garbage.h"
 
 void	*gb_malloc(size_t size, int type)
 {
@@ -30,7 +30,7 @@ void	*gb_malloc(size_t size, int type)
 		{
 			while (i--)
 				free(all[i]);
-			write(2, "malloc error !", 14);
+			write(2, "Error\nmalloc error !\n", 22);
 			exit (1);
 		}
 		i++;

@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 03:33:59 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/03 03:37:25 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:54 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 char	*ft_strdup(char *s1)
 {

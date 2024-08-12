@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 20:56:41 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/03 08:44:40 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:38 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 t_node	*ft_lstnew(void *content)
 {

@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 17:48:15 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/04 14:01:16 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:26 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../../inc/get_next_line.h"
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {

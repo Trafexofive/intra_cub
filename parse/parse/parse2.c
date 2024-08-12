@@ -6,11 +6,11 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 22:40:13 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/04 12:39:29 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 16:41:44 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub.h"
+#include "../../inc/cub.h"
 
 int	checker(t_map **all_map_adr)
 {
@@ -106,4 +106,5 @@ void	validate(t_map **all_map_adr)
 		write_fd("Error\ntextures not provided\n", 2);
 	borders(all_map_adr);
 	elements(all_map_adr);
+	check_ext(all_map_adr);
 }

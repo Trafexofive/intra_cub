@@ -1,17 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   garbage.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/05 21:17:29 by mel-houd          #+#    #+#             */
+/*   Updated: 2024/08/12 12:54:10 by mel-houd         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef GARBAGE_H
+
 # define GARBAGE_H
 
 # include <stdlib.h>
+# include <unistd.h>
 
-typedef struct s_alloc
-{
-	void			*address;
-	void			*alloc_node;
-	struct s_alloc	*next;
-}					t_alloc;
+# define MAX_SIZE 4096
 
-void				add_address(void *address, t_alloc *head);
-void				*chad_alloc(size_t size, int quantity, t_alloc *head);
-void				chad_free(t_alloc *head);
+void	*gb_malloc(size_t size, int type);
 
 #endif
