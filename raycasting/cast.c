@@ -15,6 +15,41 @@
 #include "../inc/struct.h"
 #include <mlx.h>
 
+void calculate_wall_dimensions(t_info *info, double dist, double angle) {
+    double corrected_dist = dist * cos(angle - info->player->angle);
+    double wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
+    int draw_start = (SCREEN_HEIGHT - wall_height) / 2;
+    int draw_end = (SCREEN_HEIGHT + wall_height) / 2;
+    
+    if (draw_end >= SCREEN_HEIGHT)
+        draw_end = SCREEN_HEIGHT - 1;
+    
+    info->dis = corrected_dist;
+    info->wall_h = wall_height;
+    info->draw_start = draw_start;
+    info->draw_end = draw_end;
+}
+
+void draw_wall_column(t_info *info, int x, t_point p) {
+    t_img *image = &info->img;
+    t_point point;
+    point.x = x;
+    
+    for (int y = info->draw_start; y <= info->draw_end; y++) {
+        if (y < 0 || y >= SCREEN_HEIGHT) continue;
+        
+        int y2 = ((y - info->draw_start) * 100) / info->wall_h;
+        point.y = y;
+        int color = get_tex_pixel_color(y2, info, p);
+        put_pixel(image, point, color);
+    }
+}
+
+void draw_wall_strip(t_info *info, int x, double dist, double angle, t_point p) {
+    calculate_wall_dimensions(info, dist, angle);
+    draw_wall_column(info, x, p);
+}
+
 
 void draw_wall_strip(t_info *info, int x, double dist, double angle,
                      t_point p) {
