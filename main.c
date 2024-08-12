@@ -6,7 +6,7 @@
 /*   By: mel-houd <mel-houd@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/12 08:06:08 by mel-houd          #+#    #+#             */
-/*   Updated: 2024/08/12 16:37:03 by mel-houd         ###   ########.fr       */
+/*   Updated: 2024/08/12 18:40:13 by mel-houd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ bool	game_init(t_info *info)
 			&image.line_length, &image.endian);
 	info->img = image;
 	mlx_hook(mlx->mlx_win, 17, 0, (void *)free_all, info);
-	mlx_hook(mlx->mlx_win, 2, 1L << 0, (void *)key_hook, info);
+	mlx_hook(mlx->mlx_win, 2, 1L << 1, (void *)key_hook, info);
 	mlx_loop_hook(mlx->mlx, (void *)renderer, info);
 	mlx_loop(mlx->mlx);
 	return (true);
