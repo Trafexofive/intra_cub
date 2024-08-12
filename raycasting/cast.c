@@ -51,44 +51,44 @@ void draw_wall_strip(t_info *info, int x, double dist, double angle, t_point p) 
 }
 
 
-void draw_wall_strip(t_info *info, int x, double dist, double angle,
-                     t_point p) {
-  t_img *image;
-  t_point point;
-  int color;
-  double corrected_dist;
-  double wall_height;
-  int draw_start;
-  int draw_end;
-  int y;
-  int y2;
-
-  image = &info->img;
-  corrected_dist = dist * cos(angle - info->player->angle);
-  wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
-  info->wall_h = wall_height;
-  draw_start = (SCREEN_HEIGHT - wall_height) / 2;
-  draw_end = (SCREEN_HEIGHT + wall_height) / 2;
-  if (draw_end >= SCREEN_HEIGHT)
-    draw_end = SCREEN_HEIGHT - 1;
-  info->dis = corrected_dist;
-  info->wall_h = wall_height;
-  info->draw_start = draw_start;
-  info->draw_end = draw_end;
-  point.x = x;
-  y = draw_start;
-  while (y <= draw_end) {
-    y2 = ((y - draw_start) * 100) / wall_height;
-    point.y = y;
-    if (y < 0 || y > SCREEN_HEIGHT) {
-      y++;
-      continue;
-    }
-    color = get_tex_pixel_color(y2, info, p);
-    put_pixel(image, point, color);
-    y++;
-  }
-}
+// void draw_wall_strip(t_info *info, int x, double dist, double angle,
+//                      t_point p) {
+//   t_img *image;
+//   t_point point;
+//   int color;
+//   double corrected_dist;
+//   double wall_height;
+//   int draw_start;
+//   int draw_end;
+//   int y;
+//   int y2;
+//
+//   image = &info->img;
+//   corrected_dist = dist * cos(angle - info->player->angle);
+//   wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
+//   info->wall_h = wall_height;
+//   draw_start = (SCREEN_HEIGHT - wall_height) / 2;
+//   draw_end = (SCREEN_HEIGHT + wall_height) / 2;
+//   if (draw_end >= SCREEN_HEIGHT)
+//     draw_end = SCREEN_HEIGHT - 1;
+//   info->dis = corrected_dist;
+//   info->wall_h = wall_height;
+//   info->draw_start = draw_start;
+//   info->draw_end = draw_end;
+//   point.x = x;
+//   y = draw_start;
+//   while (y <= draw_end) {
+//     y2 = ((y - draw_start) * 100) / wall_height;
+//     point.y = y;
+//     if (y < 0 || y > SCREEN_HEIGHT) {
+//       y++;
+//       continue;
+//     }
+//     color = get_tex_pixel_color(y2, info, p);
+//     put_pixel(image, point, color);
+//     y++;
+//   }
+// }
 
 void put_floor_color(t_info *info, int color) {
   t_img *image;
@@ -146,78 +146,146 @@ void set_player_spawn(t_info *info) {
     j++;
   }
 }
+void initialize_ray(t_point pos, double angle, t_point *dir, t_point *ray_step, t_point *ray_len, t_point *step, int *map_x, int *map_y) {
+    dir->x = cos(angle);
+    dir->y = sin(angle);
+    ray_step->x = fabs(TILE_SIZE / dir->x);
+    ray_step->y = fabs(TILE_SIZE / dir->y);
+    *map_x = (int)(pos.x / TILE_SIZE);
+    *map_y = (int)(pos.y / TILE_SIZE);
 
-double raycast(t_point pos, double angle, t_vector *vector, t_info *info) {
-  t_point dir;
-  t_point ray_step;
-  int map_x;
-  int map_y;
-  t_point ray_len;
-  t_point step;
-  char **map;
-  int hit;
-  double dist;
-  int end_x;
-  int end_y;
-
-  dir.x = cos(angle);
-  dir.y = sin(angle);
-  ray_step.x = fabs(TILE_SIZE / dir.x);
-  ray_step.y = fabs(TILE_SIZE / dir.y);
-  map_x = (int)(pos.x / TILE_SIZE);
-  map_y = (int)(pos.y / TILE_SIZE);
-  map = info->map;
-  if (dir.x < 0) {
-    step.x = -1;
-    ray_len.x = (pos.x - map_x * TILE_SIZE) * ray_step.x / TILE_SIZE;
-  } else {
-    step.x = 1;
-    ray_len.x = ((map_x + 1) * TILE_SIZE - pos.x) * ray_step.x / TILE_SIZE;
-  }
-  if (dir.y > 0) {
-    step.y = 1;
-    ray_len.y = ((map_y + 1) * TILE_SIZE - pos.y) * ray_step.y / TILE_SIZE;
-  } else {
-    step.y = -1;
-    ray_len.y = (pos.y - map_y * TILE_SIZE) * ray_step.y / TILE_SIZE;
-  }
-  hit = 0;
-  dist = 0;
-  while (!hit && map_x >= 0 && map_y >= 0) {
-    if (ray_len.x < ray_len.y) {
-      map_x += step.x;
-      dist = ray_len.x;
-      ray_len.x += ray_step.x;
-      if (dir.x < 0 == true)
-        info->wall_side = 'W';
-      else
-        info->wall_side = 'E';
+    if (dir->x < 0) {
+        step->x = -1;
+        ray_len->x = (pos.x - *map_x * TILE_SIZE) * ray_step->x / TILE_SIZE;
     } else {
-      map_y += step.y;
-      dist = ray_len.y;
-      ray_len.y += ray_step.y;
-      if (dir.y < 0 == true)
-        info->wall_side = 'N';
-      else
-        info->wall_side = 'S';
+        step->x = 1;
+        ray_len->x = ((*map_x + 1) * TILE_SIZE - pos.x) * ray_step->x / TILE_SIZE;
     }
-    if (map_x >= 0 && map_y >= 0) {
-      if (map[map_y][map_x] != '0' && map[map_y][map_x] != 'N' &&
-          map[map_y][map_x] != 'S' && map[map_y][map_x] != 'W' &&
-          map[map_y][map_x] != 'E') {
-        hit = 1;
-      }
+    if (dir->y > 0) {
+        step->y = 1;
+        ray_len->y = ((*map_y + 1) * TILE_SIZE - pos.y) * ray_step->y / TILE_SIZE;
+    } else {
+        step->y = -1;
+        ray_len->y = (pos.y - *map_y * TILE_SIZE) * ray_step->y / TILE_SIZE;
     }
-  }
-  end_x = pos.x + dir.x * dist;
-  end_x = end_x % TILE_SIZE;
-  end_y = pos.y + dir.y * dist;
-  vector->start = pos;
-  vector->end.x = end_x;
-  vector->end.y = end_y;
-  return (dist);
 }
 
+int perform_dda(t_info *info, t_point *dir, t_point *ray_len, t_point *ray_step, t_point *step, int *map_x, int *map_y, double *dist) {
+    int hit = 0;
+    char **map = info->map;
+
+    while (!hit && *map_x >= 0 && *map_y >= 0) {
+        if (ray_len->x < ray_len->y) {
+            *map_x += step->x;
+            *dist = ray_len->x;
+            ray_len->x += ray_step->x;
+            info->wall_side = (dir->x < 0) ? 'W' : 'E';
+        } else {
+            *map_y += step->y;
+            *dist = ray_len->y;
+            ray_len->y += ray_step->y;
+            info->wall_side = (dir->y < 0) ? 'N' : 'S';
+        }
+        if (*map_x >= 0 && *map_y >= 0) {
+            if (map[*map_y][*map_x] != '0' && map[*map_y][*map_x] != 'N' &&
+                map[*map_y][*map_x] != 'S' && map[*map_y][*map_x] != 'W' &&
+                map[*map_y][*map_x] != 'E') {
+                hit = 1;
+            }
+        }
+    }
+    return hit;
+}
+
+double raycast(t_point pos, double angle, t_vector *vector, t_info *info) {
+    t_point dir, ray_step, ray_len, step;
+    int map_x, map_y;
+    double dist = 0;
+
+    initialize_ray(pos, angle, &dir, &ray_step, &ray_len, &step, &map_x, &map_y);
+    perform_dda(info, &dir, &ray_len, &ray_step, &step, &map_x, &map_y, &dist);
+
+    int end_x = (int)(pos.x + dir.x * dist) % TILE_SIZE;
+    int end_y = (int)(pos.y + dir.y * dist);
+
+    vector->start = pos;
+    vector->end.x = end_x;
+    vector->end.y = end_y;
+
+    return dist;
+}
+
+// double raycast(t_point pos, double angle, t_vector *vector, t_info *info) {
+//   t_point dir;
+//   t_point ray_step;
+//   int map_x;
+//   int map_y;
+//   t_point ray_len;
+//   t_point step;
+//   char **map;
+//   int hit;
+//   double dist;
+//   int end_x;
+//   int end_y;
+//
+//   dir.x = cos(angle);
+//   dir.y = sin(angle);
+//   ray_step.x = fabs(TILE_SIZE / dir.x);
+//   ray_step.y = fabs(TILE_SIZE / dir.y);
+//   map_x = (int)(pos.x / TILE_SIZE);
+//   map_y = (int)(pos.y / TILE_SIZE);
+//   map = info->map;
+//   if (dir.x < 0) {
+//     step.x = -1;
+//     ray_len.x = (pos.x - map_x * TILE_SIZE) * ray_step.x / TILE_SIZE;
+//   } else {
+//     step.x = 1;
+//     ray_len.x = ((map_x + 1) * TILE_SIZE - pos.x) * ray_step.x / TILE_SIZE;
+//   }
+//   if (dir.y > 0) {
+//     step.y = 1;
+//     ray_len.y = ((map_y + 1) * TILE_SIZE - pos.y) * ray_step.y / TILE_SIZE;
+//   } else {
+//     step.y = -1;
+//     ray_len.y = (pos.y - map_y * TILE_SIZE) * ray_step.y / TILE_SIZE;
+//   }
+//   hit = 0;
+//   dist = 0;
+//   while (!hit && map_x >= 0 && map_y >= 0) {
+//     if (ray_len.x < ray_len.y) {
+//       map_x += step.x;
+//       dist = ray_len.x;
+//       ray_len.x += ray_step.x;
+//       if (dir.x < 0 == true)
+//         info->wall_side = 'W';
+//       else
+//         info->wall_side = 'E';
+//     } else {
+//       map_y += step.y;
+//       dist = ray_len.y;
+//       ray_len.y += ray_step.y;
+//       if (dir.y < 0 == true)
+//         info->wall_side = 'N';
+//       else
+//         info->wall_side = 'S';
+//     }
+//     if (map_x >= 0 && map_y >= 0) {
+//       if (map[map_y][map_x] != '0' && map[map_y][map_x] != 'N' &&
+//           map[map_y][map_x] != 'S' && map[map_y][map_x] != 'W' &&
+//           map[map_y][map_x] != 'E') {
+//         hit = 1;
+//       }
+//     }
+//   }
+//   end_x = pos.x + dir.x * dist;
+//   end_x = end_x % TILE_SIZE;
+//   end_y = pos.y + dir.y * dist;
+//   vector->start = pos;
+//   vector->end.x = end_x;
+//   vector->end.y = end_y;
+//   return (dist);
+// }
+//
 void test_cast(t_info *info) {
   t_player *player;
   double dist;
