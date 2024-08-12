@@ -15,30 +15,37 @@
 #include "../inc/struct.h"
 #include <mlx.h>
 
-void calculate_wall_dimensions(t_info *info, double dist, double angle) {
-    double corrected_dist = dist * cos(angle - info->player->angle);
-    double wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
-    int draw_start = (SCREEN_HEIGHT - wall_height) / 2;
-    int draw_end = (SCREEN_HEIGHT + wall_height) / 2;
+typedef struct s_wall_info {
+    double corrected_dist;
+    double wall_height;
+    int draw_start;
+    int draw_end;
+} t_wall_info;
+
+void calculate_wall_dimensions(t_wall_info *wi, t_info *info, double dist, double angle) {
+    wi->corrected_dist = dist * cos(angle - info->player->angle);
+    wi->wall_height = (SCREEN_HEIGHT / wi->corrected_dist) * TILE_SIZE;
+    wi->draw_start = (SCREEN_HEIGHT - wi->wall_height) / 2;
+    wi->draw_end = (SCREEN_HEIGHT + wi->wall_height) / 2;
     
-    if (draw_end >= SCREEN_HEIGHT)
-        draw_end = SCREEN_HEIGHT - 1;
+    if (wi->draw_end >= SCREEN_HEIGHT)
+        wi->draw_end = SCREEN_HEIGHT - 1;
     
-    info->dis = corrected_dist;
-    info->wall_h = wall_height;
-    info->draw_start = draw_start;
-    info->draw_end = draw_end;
+    info->dis = wi->corrected_dist;
+    info->wall_h = wi->wall_height;
+    info->draw_start = wi->draw_start;
+    info->draw_end = wi->draw_end;
 }
 
-void draw_wall_column(t_info *info, int x, t_point p) {
+void draw_wall_column(t_info *info, int x, t_point p, t_wall_info *wi) {
     t_img *image = &info->img;
     t_point point;
     point.x = x;
     
-    for (int y = info->draw_start; y <= info->draw_end; y++) {
+    for (int y = wi->draw_start; y <= wi->draw_end; y++) {
         if (y < 0 || y >= SCREEN_HEIGHT) continue;
         
-        int y2 = ((y - info->draw_start) * 100) / info->wall_h;
+        int y2 = ((y - wi->draw_start) * 100) / wi->wall_height;
         point.y = y;
         int color = get_tex_pixel_color(y2, info, p);
         put_pixel(image, point, color);
@@ -46,9 +53,44 @@ void draw_wall_column(t_info *info, int x, t_point p) {
 }
 
 void draw_wall_strip(t_info *info, int x, double dist, double angle, t_point p) {
-    calculate_wall_dimensions(info, dist, angle);
-    draw_wall_column(info, x, p);
+    t_wall_info wi;
+    calculate_wall_dimensions(&wi, info, dist, angle);
+    draw_wall_column(info, x, p, &wi);
 }
+// void calculate_wall_dimensions(t_info *info, double dist, double angle) {
+//     double corrected_dist = dist * cos(angle - info->player->angle);
+//     double wall_height = (SCREEN_HEIGHT / corrected_dist) * TILE_SIZE;
+//     int draw_start = (SCREEN_HEIGHT - wall_height) / 2;
+//     int draw_end = (SCREEN_HEIGHT + wall_height) / 2;
+//     
+//     if (draw_end >= SCREEN_HEIGHT)
+//         draw_end = SCREEN_HEIGHT - 1;
+//     
+//     info->dis = corrected_dist;
+//     info->wall_h = wall_height;
+//     info->draw_start = draw_start;
+//     info->draw_end = draw_end;
+// }
+//
+// void draw_wall_column(t_info *info, int x, t_point p) {
+//     t_img *image = &info->img;
+//     t_point point;
+//     point.x = x;
+//     
+//     for (int y = info->draw_start; y <= info->draw_end; y++) {
+//         if (y < 0 || y >= SCREEN_HEIGHT) continue;
+//         
+//         int y2 = ((y - info->draw_start) * 100) / info->wall_h;
+//         point.y = y;
+//         int color = get_tex_pixel_color(y2, info, p);
+//         put_pixel(image, point, color);
+//     }
+// }
+//
+// void draw_wall_strip(t_info *info, int x, double dist, double angle, t_point p) {
+//     calculate_wall_dimensions(info, dist, angle);
+//     draw_wall_column(info, x, p);
+// }
 
 
 // void draw_wall_strip(t_info *info, int x, double dist, double angle,
@@ -146,50 +188,61 @@ void set_player_spawn(t_info *info) {
     j++;
   }
 }
-void initialize_ray(t_point pos, double angle, t_point *dir, t_point *ray_step, t_point *ray_len, t_point *step, int *map_x, int *map_y) {
-    dir->x = cos(angle);
-    dir->y = sin(angle);
-    ray_step->x = fabs(TILE_SIZE / dir->x);
-    ray_step->y = fabs(TILE_SIZE / dir->y);
-    *map_x = (int)(pos.x / TILE_SIZE);
-    *map_y = (int)(pos.y / TILE_SIZE);
+typedef struct s_ray_info {
+    t_point dir;
+    t_point ray_step;
+    t_point ray_len;
+    t_point step;
+    int map_x;
+    int map_y;
+} t_ray_info;
 
-    if (dir->x < 0) {
-        step->x = -1;
-        ray_len->x = (pos.x - *map_x * TILE_SIZE) * ray_step->x / TILE_SIZE;
+void initialize_ray_direction(t_ray_info *ri, t_point pos, double angle) {
+    ri->dir.x = cos(angle);
+    ri->dir.y = sin(angle);
+    ri->ray_step.x = fabs(TILE_SIZE / ri->dir.x);
+    ri->ray_step.y = fabs(TILE_SIZE / ri->dir.y);
+    ri->map_x = (int)(pos.x / TILE_SIZE);
+    ri->map_y = (int)(pos.y / TILE_SIZE);
+}
+
+void calculate_ray_length(t_ray_info *ri, t_point pos) {
+    if (ri->dir.x < 0) {
+        ri->step.x = -1;
+        ri->ray_len.x = (pos.x - ri->map_x * TILE_SIZE) * ri->ray_step.x / TILE_SIZE;
     } else {
-        step->x = 1;
-        ray_len->x = ((*map_x + 1) * TILE_SIZE - pos.x) * ray_step->x / TILE_SIZE;
+        ri->step.x = 1;
+        ri->ray_len.x = ((ri->map_x + 1) * TILE_SIZE - pos.x) * ri->ray_step.x / TILE_SIZE;
     }
-    if (dir->y > 0) {
-        step->y = 1;
-        ray_len->y = ((*map_y + 1) * TILE_SIZE - pos.y) * ray_step->y / TILE_SIZE;
+    if (ri->dir.y > 0) {
+        ri->step.y = 1;
+        ri->ray_len.y = ((ri->map_y + 1) * TILE_SIZE - pos.y) * ri->ray_step.y / TILE_SIZE;
     } else {
-        step->y = -1;
-        ray_len->y = (pos.y - *map_y * TILE_SIZE) * ray_step->y / TILE_SIZE;
+        ri->step.y = -1;
+        ri->ray_len.y = (pos.y - ri->map_y * TILE_SIZE) * ri->ray_step.y / TILE_SIZE;
     }
 }
 
-int perform_dda(t_info *info, t_point *dir, t_point *ray_len, t_point *ray_step, t_point *step, int *map_x, int *map_y, double *dist) {
+int perform_dda(t_info *info, t_ray_info *ri, double *dist) {
     int hit = 0;
     char **map = info->map;
 
-    while (!hit && *map_x >= 0 && *map_y >= 0) {
-        if (ray_len->x < ray_len->y) {
-            *map_x += step->x;
-            *dist = ray_len->x;
-            ray_len->x += ray_step->x;
-            info->wall_side = (dir->x < 0) ? 'W' : 'E';
+    while (!hit && ri->map_x >= 0 && ri->map_y >= 0) {
+        if (ri->ray_len.x < ri->ray_len.y) {
+            ri->map_x += ri->step.x;
+            *dist = ri->ray_len.x;
+            ri->ray_len.x += ri->ray_step.x;
+            info->wall_side = (ri->dir.x < 0) ? 'W' : 'E';
         } else {
-            *map_y += step->y;
-            *dist = ray_len->y;
-            ray_len->y += ray_step->y;
-            info->wall_side = (dir->y < 0) ? 'N' : 'S';
+            ri->map_y += ri->step.y;
+            *dist = ri->ray_len.y;
+            ri->ray_len.y += ri->ray_step.y;
+            info->wall_side = (ri->dir.y < 0) ? 'N' : 'S';
         }
-        if (*map_x >= 0 && *map_y >= 0) {
-            if (map[*map_y][*map_x] != '0' && map[*map_y][*map_x] != 'N' &&
-                map[*map_y][*map_x] != 'S' && map[*map_y][*map_x] != 'W' &&
-                map[*map_y][*map_x] != 'E') {
+        if (ri->map_x >= 0 && ri->map_y >= 0) {
+            if (map[ri->map_y][ri->map_x] != '0' && map[ri->map_y][ri->map_x] != 'N' &&
+                map[ri->map_y][ri->map_x] != 'S' && map[ri->map_y][ri->map_x] != 'W' &&
+                map[ri->map_y][ri->map_x] != 'E') {
                 hit = 1;
             }
         }
@@ -198,19 +251,16 @@ int perform_dda(t_info *info, t_point *dir, t_point *ray_len, t_point *ray_step,
 }
 
 double raycast(t_point pos, double angle, t_vector *vector, t_info *info) {
-    t_point dir, ray_step, ray_len, step;
-    int map_x, map_y;
+    t_ray_info ri;
     double dist = 0;
 
-    initialize_ray(pos, angle, &dir, &ray_step, &ray_len, &step, &map_x, &map_y);
-    perform_dda(info, &dir, &ray_len, &ray_step, &step, &map_x, &map_y, &dist);
-
-    int end_x = (int)(pos.x + dir.x * dist) % TILE_SIZE;
-    int end_y = (int)(pos.y + dir.y * dist);
+    initialize_ray_direction(&ri, pos, angle);
+    calculate_ray_length(&ri, pos);
+    perform_dda(info, &ri, &dist);
 
     vector->start = pos;
-    vector->end.x = end_x;
-    vector->end.y = end_y;
+    vector->end.x = (int)(pos.x + ri.dir.x * dist) % TILE_SIZE;
+    vector->end.y = (int)(pos.y + ri.dir.y * dist);
 
     return dist;
 }
@@ -285,7 +335,7 @@ double raycast(t_point pos, double angle, t_vector *vector, t_info *info) {
 //   vector->end.y = end_y;
 //   return (dist);
 // }
-//
+
 void test_cast(t_info *info) {
   t_player *player;
   double dist;
